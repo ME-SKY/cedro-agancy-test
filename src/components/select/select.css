@@ -1,0 +1,105 @@
+/* Стили для select-контейнера */
+.select-container {
+  width: 300px;
+  position: relative;
+  font-family: Arial, sans-serif;
+}
+
+/* Обновление стилей для input */
+.select-input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.selected-options {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  width: 100%;
+}
+
+/* Placeholder для пустого Select */
+.search-input {
+  border: none;
+  outline: none;
+  flex: 1;
+  padding: 4px;
+  min-width: 80px;
+}
+
+.placeholder {
+  color: #999;
+}
+
+/* Dropdown styles */
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Dropdown options */
+.dropdown-options {
+  padding: 8px 0;
+}
+
+.dropdown-option {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.dropdown-option:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdown-option.selected {
+  background-color: #e6f7ff;
+}
+
+.checkmark {
+  float: right;
+  color: #1890ff;
+}
+
+.create-option {
+  padding: 8px 16px;
+  cursor: pointer;
+  color: #1890ff;
+}
+
+.create-option:hover {
+  background-color: #f0f0f0;
+}
+
+/* Label для выбранных опций */
+.label {
+  background-color: #e6f7ff;
+  border: 1px solid #1890ff;
+  border-radius: 4px;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+}
+
+.label .remove-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 8px;
+  color: #ff4d4f;
+  font-size: 14px;
+}

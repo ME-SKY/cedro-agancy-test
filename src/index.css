@@ -4,7 +4,11 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
+  /* color: rgba(255, 255, 255, 0.87); */
+  --text-primary: #130817;
+  color: var(--text-primary);
+  /* background: var(--text-primary, rgba(19, 8, 23, 0.9)); */
+
   background-color: #242424;
 
   font-synthesis: none;
