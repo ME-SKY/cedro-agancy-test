@@ -1,7 +1,8 @@
 /* Стили для select-контейнера */
 .select-container {
   background: transparent;
-  width: 292px;
+  min-width: 292px;
+  max-width: 450px;
   position: relative;
   font-family: Arial, sans-serif;
 }
@@ -82,13 +83,12 @@
 }
 
 .vertical-scroll{
-  top: calc(100% + 8px);
+  top: calc(100% + 12px); /* 8px as in dropdown + 4px padding */
   position: absolute;
   /* top: 0; */
   right: 6px;
   width: 6px;
-  min-height: 170px;
-  max-height: 170px;
+  height: 162px; /*170 - 4px padding of top and bottom*/
   background: transparent;
 }
 

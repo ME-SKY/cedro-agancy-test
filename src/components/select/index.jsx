@@ -6,7 +6,7 @@ import close from '../../assets/close.svg';
 const DefaultLabelComponent = ({ option, onRemove }) => (
   <div className="label">
     {option.label}
-    <button onClick={(e) => {e.stopPropagation(); onRemove()}}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <button onClick={(e) => { e.stopPropagation(); onRemove() }}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path opacity="0.5"
         d="M6.28033 5.21967C5.98744 4.92678 5.51256 4.92678 5.21967 5.21967C4.92678 5.51256 4.92678 5.98744 5.21967 6.28033L7.18934 8.25L5.21967 10.2197C4.92678 10.5126 4.92678 10.9874 5.21967 11.2803C5.51256 11.5732 5.98744 11.5732 6.28033 11.2803L8.25 9.31066L10.2197 11.2803C10.5126 11.5732 10.9874 11.5732 11.2803 11.2803C11.5732 10.9874 11.5732 10.5126 11.2803 10.2197L9.31066 8.25L11.2803 6.28033C11.5732 5.98744 11.5732 5.51256 11.2803 5.21967C10.9874 4.92678 10.5126 4.92678 10.2197 5.21967L8.25 7.18934L6.28033 5.21967Z"
         fill="#6E328C" />
@@ -66,6 +66,7 @@ export default function Select({ options,
 
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
+  const verticalScrollbarRef = useRef(null);
 
   const filteredOptions = useMemo(() => {
     return options.filter(option =>
@@ -76,28 +77,33 @@ export default function Select({ options,
     return internalValue;
   }, [internalValue]);
 
+  function calculateScrollPosition() {
+    const { scrollTop, scrollHeight } = dropdownRef.current;
+    const heightOfScrollbar = parseInt(getComputedStyle(verticalScrollbarRef.current).height);
+    const percentOfScroll = scrollHeight / 100;
+    const posScrollInPercents = scrollTop / percentOfScroll;
+    const onePercentInOffsetHeight = heightOfScrollbar / 100;
+    return posScrollInPercents * onePercentInOffsetHeight;
+  }
+
   function onScrollD(e) {
-    if (inputRef.current) {
-      const { scrollTop, scrollHeight, offsetHeight } = dropdownRef.current;
-      const percentOfScroll = scrollHeight / 100;
-      const posScrollInPercents = scrollTop / percentOfScroll;
-      const onePercentInOffsetHeight = offsetHeight / 100;
-      const resultPosition = posScrollInPercents * onePercentInOffsetHeight;
-      setScrollPosition(resultPosition);
+    if (dropdownRef.current && verticalScrollbarRef.current) {
+      setScrollPosition(calculateScrollPosition());
     }
   }
 
   useLayoutEffect(() => {
-    if (dropdownRef.current && isOpen) {
+    if ((dropdownRef.current && verticalScrollbarRef.current) && isOpen) {
+      setScrollPosition(calculateScrollPosition());
       if (dropdownRef.current.offsetHeight < parseInt(getComputedStyle(dropdownRef.current).maxHeight, 10)) {
         setThumbHeight(0);
       } else {
-        const { scrollHeight, offsetHeight } = dropdownRef.current;
+        const { scrollHeight } = dropdownRef.current;
+        const scrollbarHeight = parseInt(getComputedStyle(verticalScrollbarRef.current).height);
         const percentOfScroll = scrollHeight / 100;
 
-        setThumbHeight(offsetHeight / percentOfScroll);
+        setThumbHeight(scrollbarHeight / percentOfScroll);
       }
-
     }
   }, [isOpen, filteredOptions])
 
@@ -143,7 +149,7 @@ export default function Select({ options,
   return (
     <div className="select-container">
       {title && <h4 className='select-title'>{title}</h4>}
-      <div className="select-input" onClick={(e) => {console.log('it here');setIsOpen(!isOpen)}}>
+      <div className="select-input" onClick={(e) => { console.log('it here'); setIsOpen(!isOpen) }}>
         <div className="input-with-selected-options" >
           {multiple === true && value.map(option =>
             <DefaultLabelComponent key={option.value} option={option} onRemove={() => handleRemove(option)} />)}
@@ -154,7 +160,7 @@ export default function Select({ options,
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={value.length === 0 ? placeholder : ''}
-            // onClick={() => setIsOpen(!isOpen)}
+          // onClick={() => setIsOpen(!isOpen)}
           // onFocus={() => setIsOpen(true)}
           // onBlur={() => setIsOpen(false)}
           /> :
@@ -187,7 +193,7 @@ export default function Select({ options,
             />
           ) : (
             <>
-              <div className="dropdown" ref={dropdownRef} onScroll={onScrollD} data-scrollposition={scrollPosition} >
+              <div className="dropdown" ref={dropdownRef} onScroll={onScrollD} >
                 <DefaultDropdownComponent
                   options={filteredOptions}
                   value={value}
@@ -196,7 +202,7 @@ export default function Select({ options,
                   searchTerm={searchTerm}
                 />
               </div>
-              <div className="vertical-scroll" style={{ display: thumbHeight > 0 ? 'block' : 'none' }}>
+              <div className="vertical-scroll" ref={verticalScrollbarRef} style={{ display: thumbHeight > 0 ? 'block' : 'none' }}>
                 <div className='vertical-scrollbar-thumb' style={{ top: `${scrollPosition}px`, height: `${thumbHeight}%` }}>
                 </div>
               </div>
