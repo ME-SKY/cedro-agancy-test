@@ -31,7 +31,7 @@ const App = () => {
     <div style={{ padding: '20px' }}>
       <Select
         options={options}
-        multiple = {false}
+        multiple = {true}
         value={selectedValue}
         onChange={setSelectedValue}
         onCreateOption={handleCreateOption}

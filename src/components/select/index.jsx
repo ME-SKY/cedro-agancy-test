@@ -1,11 +1,16 @@
 import React, { useState, useEffect, useRef, useMemo, useLayoutEffect } from 'react';
 import './select.css';
 import dropdownArrow from '../../assets/dropdown-arrow.svg';
+import close from '../../assets/close.svg';
 
 const DefaultLabelComponent = ({ option, onRemove }) => (
   <div className="label">
     {option.label}
-    <button onClick={onRemove}>✕</button>
+    <button onClick={(e) => {e.stopPropagation(); onRemove()}}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path opacity="0.5"
+        d="M6.28033 5.21967C5.98744 4.92678 5.51256 4.92678 5.21967 5.21967C4.92678 5.51256 4.92678 5.98744 5.21967 6.28033L7.18934 8.25L5.21967 10.2197C4.92678 10.5126 4.92678 10.9874 5.21967 11.2803C5.51256 11.5732 5.98744 11.5732 6.28033 11.2803L8.25 9.31066L10.2197 11.2803C10.5126 11.5732 10.9874 11.5732 11.2803 11.2803C11.5732 10.9874 11.5732 10.5126 11.2803 10.2197L9.31066 8.25L11.2803 6.28033C11.5732 5.98744 11.5732 5.51256 11.2803 5.21967C10.9874 4.92678 10.5126 4.92678 10.2197 5.21967L8.25 7.18934L6.28033 5.21967Z"
+        fill="#6E328C" />
+    </svg></button>
   </div>
 );
 
@@ -17,16 +22,21 @@ const DefaultDropdownComponent = ({
   searchTerm,
 }) => {
 
+
+  useEffect(() => {
+    console.log('value inside dropdown -> ', value);
+  }, [value])
+
   return (
     <div className="dropdown-options">
       {options.map(option => (
         <div
           key={option.value}
-          className={`dropdown-option ${value.includes(option) ? 'selected' : ''}`}
+          className={`dropdown-option ${value.filter(val => option.value === val.value).length > 0 ? 'selected' : ''}`}
           onClick={() => { console.log('on click -> on select'); onSelect(option) }}
         >
           {option.label}
-          {value.includes(option) && <span>✔</span>}
+          {/* {value.includes(option) && <span>✔</span>} */}
         </div>
       ))}
       {searchTerm && !options.length && (
@@ -61,7 +71,7 @@ export default function Select({ options,
     return options.filter(option =>
       option.label.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [options, searchTerm])
-  
+
   const value = useMemo(() => {
     return internalValue;
   }, [internalValue]);
@@ -78,18 +88,18 @@ export default function Select({ options,
   }
 
   useLayoutEffect(() => {
-    if(dropdownRef.current && isOpen){
+    if (dropdownRef.current && isOpen) {
       if (dropdownRef.current.offsetHeight < parseInt(getComputedStyle(dropdownRef.current).maxHeight, 10)) {
         setThumbHeight(0);
       } else {
         const { scrollHeight, offsetHeight } = dropdownRef.current;
         const percentOfScroll = scrollHeight / 100;
-  
+
         setThumbHeight(offsetHeight / percentOfScroll);
       }
-     
-    } 
-  },[isOpen, filteredOptions])
+
+    }
+  }, [isOpen, filteredOptions])
 
   useEffect(() => {
     onChange && onChange(value);
@@ -133,9 +143,9 @@ export default function Select({ options,
   return (
     <div className="select-container">
       {title && <h4 className='select-title'>{title}</h4>}
-      <div className="select-input" >
-        <div className="input-with-selected-options">
-          {multiple === true && options.map(option =>
+      <div className="select-input" onClick={(e) => {console.log('it here');setIsOpen(!isOpen)}}>
+        <div className="input-with-selected-options" >
+          {multiple === true && value.map(option =>
             <DefaultLabelComponent key={option.value} option={option} onRemove={() => handleRemove(option)} />)}
           {multiple ? <input
             ref={inputRef}
@@ -144,7 +154,7 @@ export default function Select({ options,
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={value.length === 0 ? placeholder : ''}
-            onClick={() => setIsOpen(!isOpen)}
+            // onClick={() => setIsOpen(!isOpen)}
           // onFocus={() => setIsOpen(true)}
           // onBlur={() => setIsOpen(false)}
           /> :
@@ -184,10 +194,9 @@ export default function Select({ options,
                   onSelect={handleSelect}
                   onCreateOption={handleCreateOption}
                   searchTerm={searchTerm}
-                  onScrolling={calculateScrollPosition}
                 />
               </div>
-              <div className="vertical-scroll" style={{display: thumbHeight > 0 ? 'block' : 'none'}}>
+              <div className="vertical-scroll" style={{ display: thumbHeight > 0 ? 'block' : 'none' }}>
                 <div className='vertical-scrollbar-thumb' style={{ top: `${scrollPosition}px`, height: `${thumbHeight}%` }}>
                 </div>
               </div>
