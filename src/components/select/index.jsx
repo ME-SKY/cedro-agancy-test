@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useLayoutEffect } from 'react';
 import './select.css';
 import dropdownArrow from '../../assets/dropdown-arrow.svg';
 
@@ -62,8 +62,30 @@ export default function Select({ options,
   const [searchTerm, setSearchTerm] = useState('');
   const [internalValue, setInternalValue] = useState(controlledValue || []);
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [thumbHeight, setThumbHeight] = useState(0);
   // const [scrollbarHeight, ]
 
+
+  
+
+  // const value = controlledValue !== undefined ? controlledValue : internalValue;
+
+  const inputRef = useRef(null);
+  const dropdownRef = useRef(null);
+
+  const filteredOptions = useMemo(() => {
+    return options.filter(option =>
+      option.label.toLowerCase().includes(searchTerm.toLowerCase()));
+  }, [options, searchTerm])
+
+  // const thumbHeight = useMemo(() => {
+  //   if(dropdownRef.current && isOpen){
+  //     const { scrollHeight, offsetHeight } = dropdownRef.current;
+  //     const percentOfScroll = scrollHeight / 100;
+  //     return offsetHeight / percentOfScroll;
+  //   }  
+  // }, [options, isOpen]);
+  
   const value = useMemo(() => {
     console.log('useMemo valye', controlledValue);
     // if (multiple) {
@@ -72,11 +94,6 @@ export default function Select({ options,
     return internalValue;
     // }
   }, [internalValue]);
-
-  // const value = controlledValue !== undefined ? controlledValue : internalValue;
-
-  const inputRef = useRef(null);
-  const dropdownRef = useRef(null);
 
   function onScrollD(e) {
     // const area = 
@@ -100,8 +117,10 @@ export default function Select({ options,
       const onePercentInOffsetHeight = offsetHeight / 100;
 
       const resultPosition = posScrollInPercents * onePercentInOffsetHeight;
-      //
-      const thumbHeight = 
+      //сколько видимая область занимает в процентах от scrollHeight, видимая область это offsetheight, процент
+      // const thumbHeightHm = offsetHeight / percentOfScroll;
+      // setThumbHeight(thumbHeightHm);
+
 
       setScrollPosition(resultPosition);
 
@@ -110,6 +129,10 @@ export default function Select({ options,
   }
 
   useEffect(() => {
+    if(dropdownRef.current){
+      console.log('dropdownRef.current', dropdownRef.current);
+      
+    }
     // function onScollDropdown(e) {
 
     // }
@@ -118,6 +141,27 @@ export default function Select({ options,
     //   console.log()
     // }
   }, []);
+
+  useLayoutEffect(() => {
+    if(dropdownRef.current && isOpen){
+      console.log('dropdownRef.current.style.maxHeight', parseInt(getComputedStyle(dropdownRef.current).maxHeight, 10));
+      console.log('dropdownRef.current.offsetHeight', dropdownRef.current.offsetHeight);
+      if (dropdownRef.current.offsetHeight < parseInt(getComputedStyle(dropdownRef.current).maxHeight, 10)) {
+        // const maxHeight = parseInt(getComputedStyle(dropdownRef.current).maxHeight, 10);
+        setThumbHeight(0);
+        console.log('lower');
+      } else {
+        
+
+        const { scrollHeight, offsetHeight } = dropdownRef.current;
+        const percentOfScroll = scrollHeight / 100;
+  
+        // if()
+        setThumbHeight(offsetHeight / percentOfScroll);
+      }
+     
+    } 
+  },[isOpen, filteredOptions])
 
   useEffect(() => {
     console.log('value is', value);
@@ -169,9 +213,7 @@ export default function Select({ options,
   // inputValue
   // }
 
-  const filteredOptions = options.filter(option =>
-    option.label.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  
 
   const handleCreateOption = () => {
     if (onCreateOption) {
@@ -245,8 +287,8 @@ export default function Select({ options,
 
 
               </div>
-              <div className="vertical-scroll">
-                <div className='vertical-scrollbar-thumb' style={{ top: `${scrollPosition}px` }}>
+              <div className="vertical-scroll" style={{display: thumbHeight > 0 ? 'block' : 'none'}}>
+                <div className='vertical-scrollbar-thumb' style={{ top: `${scrollPosition}px`, height: `${thumbHeight}%` }}>
                 </div>
               </div>
             </>

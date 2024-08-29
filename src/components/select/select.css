@@ -89,7 +89,7 @@
   width: 6px;
   min-height: 170px;
   max-height: 170px;
-  background: red;
+  background: transparent;
 }
 
 .vertical-scrollbar-thumb {
