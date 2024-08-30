@@ -149,10 +149,24 @@ export default function Select({ options,
   return (
     <div className="select-container">
       {title && <h4 className='select-title'>{title}</h4>}
-      <div className="select-input" onClick={(e) => { console.log('it here'); setIsOpen(!isOpen) }}>
+      <div className="select-input" style={{padding: multiple ? '8px' : '11px 12px 11px 16px'}} onClick={(e) => { console.log('it here'); setIsOpen(!isOpen); inputRef.current.focus() }}>
         <div className="input-with-selected-options" >
-          {multiple === true && value.map(option =>
-            <DefaultLabelComponent key={option.value} option={option} onRemove={() => handleRemove(option)} />)}
+          {multiple === true && value.map((option, index) => {
+            if (value.length > 3 && ((index + 1) % 3 === 1) && index !== 0) {
+              return (
+                // <>
+                 <React.Fragment key={option.value}> 
+                  <span className='separator'></span>
+                  {/* <div/> */}
+                  <DefaultLabelComponent option={option} onRemove={() => handleRemove(option)} />
+                 </React.Fragment> 
+                // </>
+              )
+            } else {
+              return <DefaultLabelComponent key={option.value} option={option} onRemove={() => handleRemove(option)} />
+            }
+            
+          })}
           {multiple ? <input
             ref={inputRef}
             type="text"

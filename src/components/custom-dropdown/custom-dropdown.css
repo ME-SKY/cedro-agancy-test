@@ -1,0 +1,13 @@
+.c-dropdown-options {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.c-dropdown-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer
+}
